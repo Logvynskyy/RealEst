@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RealEst.Core.Models;
-using RealEst.Services.Service;
+using RealEst.Services.Services.Interfaces;
 
 namespace RealEst.Controllers
 {
@@ -19,19 +18,23 @@ namespace RealEst.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            if (_contractService.GetAll() == null)
+            var contracts = _contractService.GetAll();
+
+            if (contracts == null || contracts.Count == 0)
                 return NotFound("You don't have any contracts! Please, create one");
 
-            return Ok(_contractService.GetAll());
+            return Ok(contracts);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetContractById(int id)
         {
-            if (_contractService.GetById(id) == null)
+            var contract = _contractService.GetById(id);
+
+            if (contract == null)
                 return NotFound("You entered wrong contract ID!");
 
-            return Ok(_contractService.GetById(id));
+            return Ok(contract);
         }
 
         [HttpPost("create")]
@@ -40,7 +43,7 @@ namespace RealEst.Controllers
             if (!_contractService.Add(contract))
                 return NotFound("Something went wrong!");
 
-            return Created("api/Unit", contract);
+            return Created("api/Contracts", contract);
         }
 
         [HttpDelete("delete/{id}")]

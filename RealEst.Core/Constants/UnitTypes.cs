@@ -1,6 +1,6 @@
 ﻿namespace RealEst.Core.Constants
 {
-    public enum UnitType
+    public enum UnitTypes
     {
         Room,
         Apartment,

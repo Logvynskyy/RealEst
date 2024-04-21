@@ -1,6 +1,6 @@
 ﻿using RealEst.Core.Models;
 
-namespace RealEst.DataAccess
+namespace RealEst.DataAccess.Interfaces
 {
     public interface IContractRepository
     {

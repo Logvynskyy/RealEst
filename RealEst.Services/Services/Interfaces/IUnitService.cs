@@ -1,6 +1,6 @@
 ﻿using RealEst.Core.Models;
 
-namespace RealEst.Services.Service
+namespace RealEst.Services.Services.Interfaces
 {
     public interface IUnitService
     {

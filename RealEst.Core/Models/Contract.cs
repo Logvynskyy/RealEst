@@ -4,20 +4,24 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int UnitId { get; set; }
+        public Unit Unit { get; set; }
         public string Iban { get; set; }
-        public int TennantId { get; set; }
+        public Tennant Tennant { get; set; }
         public decimal Price { get; set; }
         public DateTime RentFrom { get; set; }
         public DateTime RentTo { get; set; }
 
-        public Contract(int id, string name, int unitId, string iban, int tennantId, decimal price, DateTime rentFrom, DateTime rentTo)
+        public Contract()
         {
-            Id = id;
+            
+        }
+
+        public Contract(string name, Unit unit, string iban, Tennant tennant, decimal price, DateTime rentFrom, DateTime rentTo)
+        {
             Name = name;
-            UnitId = unitId;
+            Unit = unit;
             Iban = iban;
-            TennantId = tennantId;
+            Tennant = tennant;
             Price = price;
             RentFrom = rentFrom;
             RentTo = rentTo;

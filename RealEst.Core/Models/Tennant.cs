@@ -9,9 +9,13 @@
         public decimal Debt { get; set; }
         public bool IsDebtor => Debt > 0;
 
-        public Tennant(int id, string name, string lastName, string email, decimal debt = 0)
+        public Tennant()
         {
-            Id = id;
+            
+        }
+
+        public Tennant(string name, string lastName, string email, decimal debt = 0)
+        {
             Name = name;
             LastName = lastName;
             Email = email;

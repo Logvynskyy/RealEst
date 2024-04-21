@@ -1,6 +1,6 @@
 ﻿namespace RealEst.Core.Constants
 {
-    public enum ContactType
+    public enum ContactTypes
     {
         Private,
         Company,

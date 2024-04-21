@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RealEst.Core.Models;
-using RealEst.Services.Service;
+using RealEst.Services.Services.Interfaces;
 
 namespace RealEst.Controllers
 {
@@ -18,19 +18,23 @@ namespace RealEst.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            if (_unitService.GetAll() == null)
+            var units = _unitService.GetAll();
+
+            if (units == null || units.Count == 0)
                 return NotFound("You don't have any units! Please, create one");
 
-            return Ok(_unitService.GetAll());
+            return Ok(units);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetUnitById(int id)
         {
-            if (_unitService.GetById(id) == null)
+            var unit = _unitService.GetById(id);
+
+            if (unit == null)
                 return NotFound("You entered wrong unit ID!");
 
-            return Ok(_unitService.GetById(id));
+            return Ok(unit);
         }
 
         [HttpPost("create")]
@@ -39,7 +43,7 @@ namespace RealEst.Controllers
             if(!_unitService.Add(unit))
                 return NotFound("Something went wrong!");
             
-            return Created("api/Unit", unit);
+            return Created("api/Units", unit);
         }
 
         [HttpDelete("delete/{id}")]
@@ -47,8 +51,6 @@ namespace RealEst.Controllers
         {
             if (!_unitService.DeleteById(id))
                 return NotFound("You entered wrong unit ID!");
-
-            //_unitService.DeleteById(id);
 
             return Ok(_unitService.GetAll());
         }
@@ -58,8 +60,6 @@ namespace RealEst.Controllers
         {
             if (!_unitService.Update(id, unit))
                 return NotFound("You entered wrong unit ID!");
-
-            //_unitService.Update(id, unit);
 
             return Ok(_unitService.GetById(id));
         }

@@ -1,6 +1,6 @@
 ﻿namespace RealEst.Core.Constants
 {
-    public enum DefectType
+    public enum DefectTypes
     {
         InnerCosmetic,
         InnerInfrastructural,

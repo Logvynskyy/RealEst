@@ -1,15 +1,15 @@
 ﻿using RealEst.Core.Models;
-using RealEst.Core.Constants;
+using RealEst.DataAccess.Interfaces;
 
-namespace RealEst.DataAccess
+namespace RealEst.DataAccess.Implementations
 {
     public class ListContractRepository : IContractRepository
     {
         private readonly List<Contract> _contracts = new()
         {
-            new Contract(0, "contract1", 0, "abcd1", 0, 1000, new DateTime(), new DateTime()),
-            new Contract(1, "contract2", 1, "abcd2", 1, 1500, new DateTime(), new DateTime()),
-            new Contract(2, "contract3", 2, "abcd3", 2, 2000, new DateTime(), new DateTime())
+            //new Contract(0, "contract1", 0, "abcd1", 0, 1000, new DateTime(), new DateTime()),
+            //new Contract(1, "contract2", 1, "abcd2", 1, 1500, new DateTime(), new DateTime()),
+            //new Contract(2, "contract3", 2, "abcd3", 2, 2000, new DateTime(), new DateTime())
         };
 
         private int _contractId = 3;

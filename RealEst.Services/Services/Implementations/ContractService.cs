@@ -1,15 +1,19 @@
-﻿using RealEst.Core.Models;
-using RealEst.DataAccess;
+﻿using Microsoft.Extensions.Logging;
+using RealEst.Core.Models;
+using RealEst.DataAccess.Interfaces;
+using RealEst.Services.Services.Interfaces;
 
-namespace RealEst.Services.Service
+namespace RealEst.Services.Services.Implementations
 {
     public class ContractService : IContractService
     {
         private readonly IContractRepository _contractRepository;
+        private readonly ILogger _logger;
 
-        public ContractService(IContractRepository contractRepository)
+        public ContractService(IContractRepository contractRepository, ILogger<ContractService> logger)
         {
             _contractRepository = contractRepository;
+            _logger = logger;
         }
 
         public bool Add(Contract contract)
@@ -17,11 +21,13 @@ namespace RealEst.Services.Service
             try
             {
                 _contractRepository.Add(contract);
+
+                _logger.LogInformation("Added new contract");
                 return true;
             }
             catch (InvalidOperationException e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogError(e.Message);
                 return false;
             }
         }
@@ -30,11 +36,12 @@ namespace RealEst.Services.Service
         {
             try
             {
+                _logger.LogInformation("Deleting contract with id {0}", id);
                 return _contractRepository.DeleteById(id);
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogError(e.Message);
                 return false;
             }
         }
@@ -43,11 +50,12 @@ namespace RealEst.Services.Service
         {
             try
             {
+                _logger.LogInformation("Returned all contracts");
                 return _contractRepository.GetAll();
             }
             catch (NullReferenceException e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogError(e.Message);
                 return null;
             }
         }
@@ -56,11 +64,12 @@ namespace RealEst.Services.Service
         {
             try
             {
+                _logger.LogInformation("Getting contract with id {0}", id);
                 return _contractRepository.GetById(id);
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogError(e.Message);
                 return null;
             }
         }
@@ -70,18 +79,21 @@ namespace RealEst.Services.Service
             try
             {
                 // TODO: Add validation
+                contract.Id = id;
 
                 _contractRepository.Update(id, contract);
+
+                _logger.LogInformation("Updating contract with id {0}", id);
                 return true;
             }
             catch (InvalidOperationException e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogError(e.Message);
                 return false;
             }
             catch (ArgumentOutOfRangeException e)
             {
-                Console.WriteLine(e.Message);
+                _logger.LogError(e.Message);
                 return false;
             }
         }

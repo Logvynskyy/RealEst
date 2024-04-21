@@ -1,19 +1,20 @@
 ﻿using RealEst.Core.Models;
 using RealEst.Core.Constants;
+using RealEst.DataAccess.Interfaces;
 
-namespace RealEst.DataAccess
+namespace RealEst.DataAccess.Implementations
 {
     public class ListUnitRepository : IUnitRepository
     {
         private readonly List<Unit> _units = new()
         {
-            new Unit(0, "unit1", "address1", UnitType.Room, 15),
-            new Unit(1, "unit2", "address2", UnitType.Apartment, 60),
-            new Unit(2, "unit3", "address3", UnitType.House, 100, new List<Defect>()
-                {
-                    new Defect(0, "def1", "desc1", DefectType.InnerCosmetic)
-                }
-            )
+            //new Unit("unit1", "address1", UnitType.Room, 15),
+            //new Unit("unit2", "address2", UnitType.Apartment, 60),
+            //new Unit("unit3", "address3", UnitType.House, 100, new List<Defect>()
+            //    {
+            //        new Defect(0, "def1", "desc1", DefectType.InnerCosmetic)
+            //    }
+            //)
         };
 
         private int _unitId = 3;
