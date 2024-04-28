@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RealEst.Core.Models;
 using RealEst.Core.Models.EnumModels;
 
 namespace RealEst.DataAccess
 {
-    public class ApplicationContext : DbContext
+    public class ApplicationContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationContext(DbContextOptions options)
             : base(options)
@@ -23,6 +24,8 @@ namespace RealEst.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<UnitType>()
                 .Property(e => e.Code)
                 .HasConversion<string>();

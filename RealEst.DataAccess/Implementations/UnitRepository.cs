@@ -1,4 +1,5 @@
-﻿using RealEst.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 
 namespace RealEst.DataAccess.Implementations
@@ -26,22 +27,22 @@ namespace RealEst.DataAccess.Implementations
 
             _applicationContext.SaveChanges();
 
-            return entityState == Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            return entityState == EntityState.Deleted;
         }
 
         public List<Unit> GetAll()
         {
-            return _applicationContext.Units.ToList();
+            return _applicationContext.Units.Include(u => u.Defects).ToList();
         }
 
         public Unit GetById(int id)
         {
-            return _applicationContext.Units.FirstOrDefault(_u => _u.Id == id)!;
+            return _applicationContext.Units.Include(u => u.Defects).FirstOrDefault(u => u.Id == id)!;
         }
 
         public void Update(int id, Unit unit)
         {
-            var unitToUpdate = _applicationContext.Units.FirstOrDefault(_u => _u.Id == id);
+            var unitToUpdate = _applicationContext.Units.Include(u => u.Defects).FirstOrDefault(_u => _u.Id == id);
 
             if (unitToUpdate != null)
             {
