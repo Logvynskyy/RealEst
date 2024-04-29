@@ -16,6 +16,7 @@ namespace RealEst.DataAccess
         public DbSet<UnitType> UnitTypes { get; set; } = null!;
         public DbSet<ContactType> ContactTypes { get; set; } = null!;
         public DbSet<DefectType> DefectTypes { get; set; } = null!;
+        public DbSet<Organisation> Organisations { get; set; } = null!;
         public DbSet<Tennant> Tennants { get; set; } = null!;
         public DbSet<Defect> Defects { get; set; } = null!;
         public DbSet<Unit> Units { get; set; } = null!;

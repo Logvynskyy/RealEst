@@ -51,6 +51,9 @@ namespace RealEst
 
             builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 
+            builder.Services.AddTransient<IOrganisationRepository, OrganisationRepository>();
+            builder.Services.AddTransient<IOrganisationService, OrganisationService>();
+
             builder.Services.AddTransient<IUnitRepository, UnitRepository>();
             builder.Services.AddTransient<IUnitService, UnitService>();
 

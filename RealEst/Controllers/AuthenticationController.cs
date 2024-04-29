@@ -16,7 +16,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] UserDto userDto)
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDto userDto)
         {
             if(await _authenticationService.CheckIfUserExists(userDto))
             {
@@ -34,7 +34,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPost("RegisterOrganisationOwner")]
-        public async Task<IActionResult> RegisterOrganisationOwner([FromBody] UserDto userDto)
+        public async Task<IActionResult> RegisterOrganisationOwner([FromBody] UserRegistrationDto userDto)
         {
             if (await _authenticationService.CheckIfUserExists(userDto))
             {
@@ -52,9 +52,9 @@ namespace RealEst.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] UserDto userDto)
+        public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
         {
-            var token = await _authenticationService.Login(userDto);
+            var token = await _authenticationService.Login(userLoginDto);
 
             if(token == null)
             {

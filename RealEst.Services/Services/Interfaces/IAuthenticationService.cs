@@ -5,10 +5,10 @@ namespace RealEst.Services.Services.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<bool> CheckIfUserExists(UserDto userDto);
-        Task<bool> RegisterUser(UserDto userDtoDto);
-        Task<bool> RegisterAdmin(UserDto userDtoDto);
-        Task<string> Login(UserDto userDto);
-        Task<ApplicationUser> GetCurrentUser(UserDto userDto);
+        Task<bool> CheckIfUserExists(UserRegistrationDto userDto);
+        Task<bool> RegisterUser(UserRegistrationDto userDto);
+        Task<bool> RegisterAdmin(UserRegistrationDto userDto);
+        Task<string> Login(UserLoginDto userLoginDto);
+        Task<ApplicationUser> GetCurrentUser(UserRegistrationDto userDto);
     }
 }
