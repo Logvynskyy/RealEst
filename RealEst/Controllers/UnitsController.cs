@@ -6,11 +6,11 @@ namespace RealEst.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UnitController : ControllerBase
+    public class UnitsController : ControllerBase
     {
         private readonly IUnitService _unitService;
 
-        public UnitController(IUnitService unitService)
+        public UnitsController(IUnitService unitService)
         {
             _unitService = unitService;
         }
