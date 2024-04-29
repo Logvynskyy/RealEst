@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using RealEst.Core.Constants;
 using RealEst.Core.DTOs;
 using RealEst.DataAccess;
 using RealEst.Services.Services.Interfaces;
@@ -13,12 +14,12 @@ namespace RealEst.Services.Services.Implementations
     public class AuthenticationService : IAuthenticationService
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        //private readonly RoleManager<ApplicationUser> _roleManager; RoleManager<ApplicationUser> roleManager
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _config;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration) {
+        public AuthenticationService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration) {
             _userManager = userManager;
-            //_roleManager = roleManager;
+            _roleManager = roleManager;
             _config = configuration;
         }
 
@@ -67,17 +68,49 @@ namespace RealEst.Services.Services.Implementations
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<bool> RegisterUser(UserDto registrationDto)
+        public async Task<bool> RegisterAdmin(UserDto userDtoDto)
         {
             var user = new ApplicationUser
             {
-                UserName = registrationDto.Username,
+                UserName = userDtoDto.Username,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
 
-            var result = await _userManager.CreateAsync(user, registrationDto.Password);
+            var result = await _userManager.CreateAsync(user, userDtoDto.Password);
+
+            await EnsureRolesExist();
+            
+            await _userManager.AddToRoleAsync(user, UserRoles.Admin);
 
             return result.Succeeded;
+        }
+
+        public async Task<bool> RegisterUser(UserDto userDtoDto)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = userDtoDto.Username,
+                SecurityStamp = Guid.NewGuid().ToString()
+            };
+
+            var result = await _userManager.CreateAsync(user, userDtoDto.Password);
+
+            return result.Succeeded;
+        }
+
+        private async Task EnsureRolesExist()
+        {
+            if(!await _roleManager.RoleExistsAsync(UserRoles.User))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+            }
+
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+            }
+
+            return;
         }
     }
 }

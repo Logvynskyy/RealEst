@@ -33,6 +33,24 @@ namespace RealEst.Controllers
             return Ok("User registered successfully!");
         }
 
+        [HttpPost("RegisterOrganisationOwner")]
+        public async Task<IActionResult> RegisterOrganisationOwner([FromBody] UserDto userDto)
+        {
+            if (await _authenticationService.CheckIfUserExists(userDto))
+            {
+                return BadRequest("User with provided Email already exists!");
+            }
+
+            var result = await _authenticationService.RegisterAdmin(userDto);
+
+            if (!result)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Creation went wrong!");
+            }
+
+            return Ok("Admin registered successfully!");
+        }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserDto userDto)
         {
