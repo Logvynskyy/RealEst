@@ -75,9 +75,14 @@ namespace RealEst.Services.Services.Implementations
         {
             var user = GetCurrentUser(userLoginDto).Result;
 
-            if (!CheckIfUserExists(userLoginDto).Result || !await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
+            if (!CheckIfUserExists(userLoginDto).Result)
             {
                 return null;
+            }
+
+            if(!await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
+            {
+                return "pass";
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);

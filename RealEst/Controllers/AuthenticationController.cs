@@ -58,7 +58,12 @@ namespace RealEst.Controllers
 
             if(token == null)
             {
-                return BadRequest("User doesn't exists!");
+                return Unauthorized("User doesn't exists!");
+            }
+
+            if(token == "pass")
+            {
+                return Unauthorized("You've entered the wrong password!");
             }
 
             return Ok(token);
