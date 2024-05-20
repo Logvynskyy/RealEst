@@ -1,4 +1,5 @@
 ﻿using RealEst.Core.DTOs;
+using RealEst.Core.Models;
 using RealEst.DataAccess;
 
 namespace RealEst.Services.Services.Interfaces
@@ -10,5 +11,6 @@ namespace RealEst.Services.Services.Interfaces
         Task<bool> RegisterAdmin(UserRegistrationDto userDto);
         Task<string> Login(UserLoginDto userLoginDto);
         Task<ApplicationUser> GetCurrentUser(UserRegistrationDto userDto);
+        Organisation GetCurrentOrganisation();
     }
 }

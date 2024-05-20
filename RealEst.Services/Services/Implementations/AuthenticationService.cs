@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using RealEst.Core.Constants;
 using RealEst.Core.DTOs;
+using RealEst.Core.Models;
 using RealEst.DataAccess;
 using RealEst.DataAccess.Interfaces;
 using RealEst.Services.Services.Interfaces;
@@ -18,15 +21,19 @@ namespace RealEst.Services.Services.Implementations
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IOrganisationRepository _organisationRepository;
         private readonly IConfiguration _config;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, 
+        public AuthenticationService(UserManager<ApplicationUser> userManager, 
+            RoleManager<IdentityRole> roleManager, 
             IOrganisationRepository organisationRepository,
-            IConfiguration configuration) 
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor) 
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _organisationRepository = organisationRepository;
             _config = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> CheckIfUserExists(UserRegistrationDto userDto)
@@ -41,12 +48,27 @@ namespace RealEst.Services.Services.Implementations
 
         public async Task<ApplicationUser> GetCurrentUser(UserRegistrationDto userDto)
         {
-            return await _userManager.FindByNameAsync(userDto.Username);
+            return await _userManager
+                .Users
+                .Include(u => u.Organisation)
+                .FirstOrDefaultAsync(u => u.UserName == userDto.Username);
         }
 
         public async Task<ApplicationUser> GetCurrentUser(UserLoginDto userLoginDto)
         {
-            return await _userManager.FindByNameAsync(userLoginDto.Username);
+            return await _userManager
+                .Users
+                .Include(u => u.Organisation)
+                .FirstOrDefaultAsync(u => u.UserName == userLoginDto.Username);
+        }
+
+        public Organisation GetCurrentOrganisation()
+        {
+            return _userManager
+                .Users
+                .Include(u => u.Organisation)
+                .FirstOrDefaultAsync(u => u.UserName == _httpContextAccessor.HttpContext.User.Identity.Name)
+                .Result!.Organisation;
         }
 
         public async Task<string> Login(UserLoginDto userLoginDto)
