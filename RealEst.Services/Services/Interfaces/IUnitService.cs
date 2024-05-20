@@ -1,13 +1,13 @@
-﻿using RealEst.Core.Models;
+﻿using RealEst.Core.DTOs;
 
 namespace RealEst.Services.Services.Interfaces
 {
     public interface IUnitService
     {
-        Unit GetById(int id);
-        List<Unit> GetAll();
-        bool Add(Unit unit);
-        bool Update(int id, Unit unit);
+        UnitDto GetById(int id);
+        List<UnitDto> GetAll();
+        bool Add(UnitDto unitDto);
+        bool Update(int id, UnitDto unitDto);
         bool DeleteById(int id);
     }
 }

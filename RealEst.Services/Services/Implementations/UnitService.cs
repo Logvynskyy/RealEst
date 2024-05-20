@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using RealEst.Core.DTOs;
 using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 using RealEst.Services.Services.Interfaces;
@@ -9,19 +10,24 @@ namespace RealEst.Services.Services.Implementations
     {
         private readonly IUnitRepository _unitRepository;
         private readonly ILogger<UnitService> _logger;
+        private readonly IAuthenticationService _authenticationService;
 
-        public UnitService(IUnitRepository unitRepository, ILogger<UnitService> logger)
+        public UnitService(IUnitRepository unitRepository, 
+            ILogger<UnitService> logger, 
+            IAuthenticationService authenticationService)
         {
             _unitRepository = unitRepository;
             _logger = logger;
+            _authenticationService = authenticationService;
         }
 
-        public bool Add(Unit unit)
+        public bool Add(UnitDto unitDto)
         {
             try
             {
                 //if (!_unitValidator.Validate(unit).FirstOrDefault())
                 //    throw new InvalidOperationException("You passed invalid unit!");
+                var unit = DtoToEntity(unitDto);
 
                 _unitRepository.Add(unit);
 
@@ -49,12 +55,13 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public List<Unit> GetAll()
+        public List<UnitDto> GetAll()
         {
             try
             {
                 _logger.LogInformation("Returned all units");
-                return _unitRepository.GetAll();
+
+                return _unitRepository.GetAll().Select(x => EntityToDto(x)).ToList();
             }
             catch (NullReferenceException e)
             {
@@ -63,12 +70,13 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public Unit GetById(int id)
+        public UnitDto GetById(int id)
         {
             try
             {
                 _logger.LogInformation("Getting unit with id {0}", id);
-                return _unitRepository.GetById(id);
+
+                return EntityToDto(_unitRepository.GetById(id));
             }
             catch (ArgumentOutOfRangeException e)
             {
@@ -77,12 +85,14 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public bool Update(int id, Unit unit)
+        public bool Update(int id, UnitDto unitDto)
         {
             try
             {
                 // TODO: Add validation
-                unit.Id = id;
+                unitDto.Id = id;
+
+                var unit = DtoToEntity(unitDto);
 
                 _unitRepository.Update(id, unit);
 
@@ -99,6 +109,24 @@ namespace RealEst.Services.Services.Implementations
                 _logger.LogError(e.Message);
                 return false;
             }
+        }
+
+        private Unit DtoToEntity(UnitDto unitDto)
+        {
+            return new Unit(unitDto, _authenticationService.GetCurrentOrganisation());
+        }
+
+        private UnitDto EntityToDto(Unit unit)
+        {
+            return new UnitDto
+            {
+                Id = unit.Id,
+                Name = unit.Name,
+                Address = unit.Address,
+                UnitType = unit.UnitType,
+                Footage = unit.Footage,
+                Defects = unit.Defects
+            };
         }
     }
 }

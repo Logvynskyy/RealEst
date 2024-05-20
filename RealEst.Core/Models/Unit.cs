@@ -1,4 +1,5 @@
 ﻿using RealEst.Core.Constants;
+using RealEst.Core.DTOs;
 
 namespace RealEst.Core.Models
 {
@@ -10,19 +11,27 @@ namespace RealEst.Core.Models
         public UnitTypes UnitType { get; set; }
         public double Footage { get; set; }
         public IList<Defect>? Defects { get; set; }
+        public Organisation Organisation { get; set; }
 
         public Unit()
         {
             
         }
 
-        public Unit(string name, string address, UnitTypes unitType, double footage, IList<Defect> defects = null)
+        public Unit(string name, string address, UnitTypes unitType, double footage,
+            IList<Defect> defects = null, Organisation organisation = null)
         {
             Name = name;
             Address = address;
             UnitType = unitType;
             Footage = footage;
             Defects = defects;
+        }
+
+        public Unit(UnitDto unitDto, Organisation organisation)
+            : this(unitDto.Name, unitDto.Address, unitDto.UnitType, unitDto.Footage, unitDto.Defects)
+        {
+            Organisation = organisation;
         }
     }
 }

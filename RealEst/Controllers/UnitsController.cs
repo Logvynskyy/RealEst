@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RealEst.Core.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RealEst.Core.DTOs;
 using RealEst.Services.Services.Interfaces;
 
 namespace RealEst.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class UnitsController : ControllerBase
@@ -38,7 +40,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreateNewUnit([FromBody] Unit unit)
+        public IActionResult CreateNewUnit([FromBody] UnitDto unit)
         {
             if(!_unitService.Add(unit))
                 return NotFound("Something went wrong!");
@@ -56,7 +58,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPatch("edit/{id}")]
-        public IActionResult UpdateUnit(int id, [FromBody] Unit unit)
+        public IActionResult UpdateUnit(int id, [FromBody] UnitDto unit)
         {
             if (!_unitService.Update(id, unit))
                 return NotFound("You entered wrong unit ID!");
