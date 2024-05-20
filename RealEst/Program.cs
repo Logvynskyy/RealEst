@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RealEst.DataAccess;
 using RealEst.DataAccess.Implementations;
 using RealEst.DataAccess.Interfaces;
 using RealEst.Services.Services.Implementations;
 using RealEst.Services.Services.Interfaces;
+using RealEst.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
 namespace RealEst
@@ -19,21 +22,26 @@ namespace RealEst
             var config = builder.Configuration;
 
             // Add services to the container.
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(x =>
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    x.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidIssuer = config["JwtSettings:Issuer"],
-                        ValidAudience = config["JwtSettings:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey
-                            (Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true
-                    };
-                });
+                    ValidIssuer = config["JwtSettings:Issuer"],
+                    ValidAudience = config["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey
+                        (Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true
+                };
+            });
 
             builder.Services.AddAuthorization();
 
@@ -48,6 +56,8 @@ namespace RealEst
             builder.Services.AddIdentity<ApplicationUser,IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>()
                 .AddDefaultTokenProviders();
+
+            builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
             builder.Services.AddTransient<IAuthenticationService, AuthenticationService>();
 
@@ -66,6 +76,8 @@ namespace RealEst
             builder.Services.AddTransient<IContactRepository, ContactRepository>();
             builder.Services.AddTransient<IContactService, ContactService>();
 
+            builder.Services.AddHttpContextAccessor();
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -78,12 +90,12 @@ namespace RealEst
                     var logger = services.GetRequiredService<ILogger<Program>>();
 
                     // Ensure database migration and apply pending migrations
-                    context.Database.EnsureDeleted();
+                    //context.Database.EnsureDeleted();
                     if(context.Database.EnsureCreated())
                         logger.LogInformation("Database migration completed.");
 
                     // Seed the database with initial data
-                    EntitiesSeeder.EnsureSeeded(context);
+                    //EntitiesSeeder.EnsureSeeded(context);
                     logger.LogInformation("Database seeding completed.");
                 }
                 catch (Exception ex)
