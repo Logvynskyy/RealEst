@@ -8,6 +8,7 @@
         public string Email { get; set; }
         public decimal Debt { get; set; }
         public bool IsDebtor => Debt > 0;
+        public string DisplayString => Name + ' ' + LastName;
 
         public Tennant()
         {

@@ -12,6 +12,7 @@ namespace RealEst.Core.Models
         public double Footage { get; set; }
         public IList<Defect>? Defects { get; set; }
         public Organisation Organisation { get; set; }
+        public string DisplayString => Name + ' ' + Address;
 
         public Unit()
         {
@@ -19,7 +20,7 @@ namespace RealEst.Core.Models
         }
 
         public Unit(string name, string address, UnitTypes unitType, double footage,
-            IList<Defect> defects = null, Organisation organisation = null)
+            IList<Defect> defects = null)
         {
             Name = name;
             Address = address;
