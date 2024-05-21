@@ -1,4 +1,5 @@
 ﻿using RealEst.Core.Constants;
+using RealEst.Core.DTOs;
 
 namespace RealEst.Core.Models
 {
@@ -12,6 +13,7 @@ namespace RealEst.Core.Models
         public ContactTypes ContactType { get; set; }
         public int Priority { get; set; }
         public string DisplayString => Name + ' ' + LastName;
+        public Organisation Organisation { get; init; }
 
         public Contact()
         {
@@ -26,6 +28,13 @@ namespace RealEst.Core.Models
             PhoneNumber = phone;
             ContactType = contactType;
             Priority = priority;
+        }
+
+        public Contact(ContactDto contactDto, Organisation organisation)
+            : this(contactDto.Name, contactDto.LastName, contactDto.Email, 
+                  contactDto.PhoneNumber, contactDto.ContactType, contactDto.Priority)
+        {
+            Organisation = organisation;
         }
     }
 }

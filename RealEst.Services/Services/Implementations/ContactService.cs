@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using RealEst.Core.DTOs;
 using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 using RealEst.Services.Services.Interfaces;
@@ -9,18 +10,22 @@ namespace RealEst.Services.Services.Implementations
     {
         private readonly IContactRepository _contactRepository;
         private readonly ILogger _logger;
+        private readonly IAuthenticationService _authenticationService;
 
-        public ContactService(IContactRepository contactRepository, ILogger<ContactService> logger)
+        public ContactService(IContactRepository contactRepository, 
+            ILogger<ContactService> logger,
+            IAuthenticationService authenticationService)
         {
             _contactRepository = contactRepository;
             _logger = logger;
+            _authenticationService = authenticationService;
         }
 
-        public bool Add(Contact contact)
+        public bool Add(ContactDto contact)
         {
             try
             {
-                _contactRepository.Add(contact);
+                _contactRepository.Add(DtoToEntity(contact));
 
                 _logger.LogInformation("Added new contact");
                 return true;
@@ -46,12 +51,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public List<Contact> GetAll()
+        public List<ContactDto> GetAll()
         {
             try
             {
                 _logger.LogInformation("Returned all contacts");
-                return _contactRepository.GetAll();
+                return _contactRepository.GetAll().Select(x => EntityToDto(x)).ToList();
             }
             catch (NullReferenceException e)
             {
@@ -60,12 +65,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public Contact GetById(int id)
+        public ContactDto GetById(int id)
         {
             try
             {
                 _logger.LogInformation("Getting contact with id {0}", id);
-                return _contactRepository.GetById(id);
+                return EntityToDto(_contactRepository.GetById(id));
             }
             catch (ArgumentOutOfRangeException e)
             {
@@ -74,12 +79,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public bool Update(int id, Contact contact)
+        public bool Update(int id, ContactDto contactDto)
         {
             try
             {
                 // TODO: Add validation
-                contact.Id = id;
+                var contact = DtoToEntity(contactDto);
 
                 _contactRepository.Update(id, contact);
 
@@ -96,6 +101,25 @@ namespace RealEst.Services.Services.Implementations
                 _logger.LogError(e.Message);
                 return false;
             }
+        }
+
+        public Contact DtoToEntity(ContactDto contactDto)
+        {
+            return new Contact(contactDto, _authenticationService.GetCurrentOrganisation());
+        }
+
+        public ContactDto EntityToDto(Contact entity)
+        {
+            return new ContactDto
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                PhoneNumber = entity.PhoneNumber,
+                ContactType = entity.ContactType,
+                Priority = entity.Priority
+            };
         }
     }
 }

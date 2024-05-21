@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RealEst.Core.Models;
+using RealEst.Core.DTOs;
 using RealEst.Services.Services.Interfaces;
 
 namespace RealEst.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class TennantsController : ControllerBase
@@ -39,7 +41,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreateNewTennant([FromBody] Tennant tennant)
+        public IActionResult CreateNewTennant([FromBody] TennantDto tennant)
         {
             if (!_tennantService.Add(tennant))
                 return NotFound("Something went wrong!");
@@ -57,7 +59,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPatch("edit/{id}")]
-        public IActionResult UpdateTennant(int id, [FromBody] Tennant tennant)
+        public IActionResult UpdateTennant(int id, [FromBody] TennantDto tennant)
         {
             if (!_tennantService.Update(id, tennant))
                 return NotFound("You entered wrong tennant ID!");

@@ -90,9 +90,7 @@ namespace RealEst.Services.Services.Implementations
             try
             {
                 // TODO: Add validation
-                unitDto.Id = id;
-
-                var unit = DtoToEntity(unitDto);
+               var unit = DtoToEntity(unitDto);
 
                 _unitRepository.Update(id, unit);
 
@@ -111,12 +109,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        private Unit DtoToEntity(UnitDto unitDto)
+        public Unit DtoToEntity(UnitDto unitDto)
         {
             return new Unit(unitDto, _authenticationService.GetCurrentOrganisation());
         }
 
-        private UnitDto EntityToDto(Unit unit)
+        public UnitDto EntityToDto(Unit unit)
         {
             return new UnitDto
             {

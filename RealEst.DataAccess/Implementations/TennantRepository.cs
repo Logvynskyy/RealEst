@@ -1,11 +1,12 @@
-﻿using RealEst.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 
 namespace RealEst.DataAccess.Implementations
 {
     public class TennantRepository : ITennantRepository
     {
-        private ApplicationContext _applicationContext;
+        private readonly ApplicationContext _applicationContext;
 
         public TennantRepository(ApplicationContext applicationContext)
         {
@@ -26,22 +27,22 @@ namespace RealEst.DataAccess.Implementations
 
             _applicationContext.SaveChanges();
 
-            return entityState == Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            return entityState == EntityState.Deleted;
         }
 
         public List<Tennant> GetAll()
         {
-            return _applicationContext.Tennants.ToList();
+            return _applicationContext.Tennants.Include(t => t.Organisation).ToList();
         }
 
         public Tennant GetById(int id)
         {
-            return _applicationContext.Tennants.FirstOrDefault(t => t.Id == id)!;
+            return _applicationContext.Tennants.Include(t => t.Organisation).FirstOrDefault(t => t.Id == id)!;
         }
 
         public void Update(int id, Tennant tennant)
         {
-            var tennantToUpdate = _applicationContext.Tennants.FirstOrDefault(c => c.Id == id);
+            var tennantToUpdate = _applicationContext.Tennants.Include(t => t.Organisation).FirstOrDefault(c => c.Id == id);
 
             if (tennantToUpdate != null)
             {

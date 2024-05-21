@@ -5,7 +5,7 @@ namespace RealEst.DataAccess.Implementations
 {
     public class OrganisationRepository : IOrganisationRepository
     {
-        private ApplicationContext _applicationContext;
+        private readonly ApplicationContext _applicationContext;
 
         public OrganisationRepository(ApplicationContext applicationContext)
         {

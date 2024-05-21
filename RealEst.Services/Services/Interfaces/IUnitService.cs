@@ -1,4 +1,5 @@
 ﻿using RealEst.Core.DTOs;
+using RealEst.Core.Models;
 
 namespace RealEst.Services.Services.Interfaces
 {
@@ -9,5 +10,7 @@ namespace RealEst.Services.Services.Interfaces
         bool Add(UnitDto unitDto);
         bool Update(int id, UnitDto unitDto);
         bool DeleteById(int id);
+        Unit DtoToEntity(UnitDto unitDto);
+        UnitDto EntityToDto(Unit unit);
     }
 }

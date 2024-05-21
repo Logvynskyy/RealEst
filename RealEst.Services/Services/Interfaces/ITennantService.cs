@@ -1,13 +1,16 @@
-﻿using RealEst.Core.Models;
+﻿using RealEst.Core.DTOs;
+using RealEst.Core.Models;
 
 namespace RealEst.Services.Services.Interfaces
 {
     public interface ITennantService
     {
-        Tennant GetById(int id);
-        List<Tennant> GetAll();
-        bool Add(Tennant tennant);
-        bool Update(int id, Tennant tennant);
+        TennantDto GetById(int id);
+        List<TennantDto> GetAll();
+        bool Add(TennantDto tennant);
+        bool Update(int id, TennantDto tennant);
         bool DeleteById(int id);
+        Tennant DtoToEntity(TennantDto tennantDto);
+        TennantDto EntityToDto(Tennant entity);
     }
 }

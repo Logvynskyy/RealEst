@@ -9,6 +9,7 @@ namespace RealEst.Core.Models
         public string Description { get; set; }
         public DefectTypes DefectType { get; set; }
         public string DisplayString => Name;
+        public Organisation Organisation { get; init; }
 
         public Defect()
         {

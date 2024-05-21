@@ -1,13 +1,16 @@
-﻿using RealEst.Core.Models;
+﻿using RealEst.Core.DTOs;
+using RealEst.Core.Models;
 
 namespace RealEst.Services.Services.Interfaces
 {
     public interface IContactService
     {
-        Contact GetById(int id);
-        List<Contact> GetAll();
-        bool Add(Contact contact);
-        bool Update(int id, Contact contact);
+        ContactDto GetById(int id);
+        List<ContactDto> GetAll();
+        bool Add(ContactDto contact);
+        bool Update(int id, ContactDto contact);
         bool DeleteById(int id);
+        Contact DtoToEntity(ContactDto contactDto);
+        ContactDto EntityToDto(Contact entity);
     }
 }

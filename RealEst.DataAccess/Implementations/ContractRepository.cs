@@ -1,11 +1,12 @@
-﻿using RealEst.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 
 namespace RealEst.DataAccess.Implementations
 {
     public class ContractRepository : IContractRepository
     {
-        private ApplicationContext _applicationContext;
+        private readonly ApplicationContext _applicationContext;
 
         public ContractRepository(ApplicationContext applicationContext)
         {
@@ -26,22 +27,34 @@ namespace RealEst.DataAccess.Implementations
 
             _applicationContext.SaveChanges();
 
-            return entityState == Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            return entityState == EntityState.Deleted;
         }
 
         public List<Contract> GetAll()
         {
-            return _applicationContext.Contracts.ToList();
+            return _applicationContext.Contracts
+                    .Include(c => c.Unit)
+                    .Include(c => c.Tennant)
+                    .Include(c => c.Organisation)
+                .ToList();
         }
 
         public Contract GetById(int id)
         {
-            return _applicationContext.Contracts.FirstOrDefault(c => c.Id == id)!;
+            return _applicationContext.Contracts
+                    .Include(c => c.Unit)
+                    .Include(c => c.Tennant)
+                    .Include(c => c.Organisation)
+                .FirstOrDefault(c => c.Id == id)!;
         }
 
         public void Update(int id, Contract contract)
         {
-            var contractToUpdate = _applicationContext.Contracts.FirstOrDefault(c => c.Id == id);
+            var contractToUpdate = _applicationContext.Contracts
+                    .Include(c => c.Unit)
+                    .Include(c => c.Tennant)
+                    .Include(c => c.Organisation)
+                .FirstOrDefault(c => c.Id == id);
 
             if(contractToUpdate != null)
             {

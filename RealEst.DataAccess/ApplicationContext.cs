@@ -27,6 +27,18 @@ namespace RealEst.DataAccess
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Contract>()
+                .HasOne(c => c.Unit)
+                .WithMany()
+                .HasForeignKey(c => c.UnitId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Contract>()
+                .HasOne(c => c.Tennant)
+                .WithMany()
+                .HasForeignKey(c => c.TennantId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             modelBuilder.Entity<UnitType>()
                 .Property(e => e.Code)
                 .HasConversion<string>();

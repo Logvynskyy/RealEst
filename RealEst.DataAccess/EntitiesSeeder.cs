@@ -48,9 +48,9 @@ namespace RealEst.DataAccess
             {
                 var contracts = new List<Contract>()
                 {
-                    new Contract("contract1", units[0], "abcd1", tennant, 1000, new DateTime(), new DateTime()),
-                    new Contract("contract2", units[1], "abcd2", tennant, 1500, new DateTime(), new DateTime()),
-                    new Contract("contract3", units[2], "abcd3", tennant, 2000, new DateTime(), new DateTime())
+                    new Contract("contract1", 0, "abcd1", 0, 1000, new DateTime(), new DateTime()),
+                    new Contract("contract2", 1, "abcd2", 1, 1500, new DateTime(), new DateTime()),
+                    new Contract("contract3", 2, "abcd3", 2, 2000, new DateTime(), new DateTime())
                 };
 
                 context.Contracts.AddRange(contracts);

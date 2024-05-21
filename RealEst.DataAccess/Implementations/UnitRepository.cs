@@ -6,7 +6,7 @@ namespace RealEst.DataAccess.Implementations
 {
     public class UnitRepository : IUnitRepository
     {
-        private ApplicationContext _applicationContext;
+        private readonly ApplicationContext _applicationContext;
 
         public UnitRepository(ApplicationContext applicationContext)
         {
@@ -22,7 +22,7 @@ namespace RealEst.DataAccess.Implementations
         public bool DeleteById(int id)
         {
             var unitToDelete = _applicationContext.Units
-                .Remove(_applicationContext.Units.FirstOrDefault(u => u.Id == id));
+                .Remove(_applicationContext.Units.FirstOrDefault(u => u.Id == id)!);
             var entityState = unitToDelete.State;
 
             _applicationContext.SaveChanges();
@@ -32,17 +32,26 @@ namespace RealEst.DataAccess.Implementations
 
         public List<Unit> GetAll()
         {
-            return _applicationContext.Units.Include(u => u.Defects).ToList();
+            return _applicationContext.Units
+                    .Include(u => u.Defects)
+                    .Include(u => u.Organisation)
+                .ToList();
         }
 
         public Unit GetById(int id)
         {
-            return _applicationContext.Units.Include(u => u.Defects).FirstOrDefault(u => u.Id == id)!;
+            return _applicationContext.Units
+                    .Include(u => u.Defects)
+                    .Include(u => u.Organisation)
+                .FirstOrDefault(u => u.Id == id)!;
         }
 
         public void Update(int id, Unit unit)
         {
-            var unitToUpdate = _applicationContext.Units.Include(u => u.Defects).FirstOrDefault(_u => _u.Id == id);
+            var unitToUpdate = _applicationContext.Units
+                    .Include(u => u.Defects)
+                    .Include(u => u.Organisation)
+                .FirstOrDefault(_u => _u.Id == id);
 
             if (unitToUpdate != null)
             {

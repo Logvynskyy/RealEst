@@ -11,7 +11,7 @@ namespace RealEst.Core.Models
         public UnitTypes UnitType { get; set; }
         public double Footage { get; set; }
         public IList<Defect>? Defects { get; set; }
-        public Organisation Organisation { get; set; }
+        public Organisation Organisation { get; init; }
         public string DisplayString => Name + ' ' + Address;
 
         public Unit()

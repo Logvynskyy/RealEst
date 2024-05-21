@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RealEst.Core.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RealEst.Core.DTOs;
 using RealEst.Services.Services.Interfaces;
 
 namespace RealEst.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class ContractsController : ControllerBase
@@ -38,12 +40,12 @@ namespace RealEst.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreateNewContract([FromBody] Contract contract)
+        public IActionResult CreateNewContract([FromBody] ContractInputDto contract)
         {
             if (!_contractService.Add(contract))
                 return NotFound("Something went wrong!");
 
-            return Created("api/Contracts", contract);
+            return Created("api/Contracts", null);
         }
 
         [HttpDelete("delete/{id}")]
@@ -56,7 +58,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPatch("edit/{id}")]
-        public IActionResult UpdateContract(int id, [FromBody] Contract contract)
+        public IActionResult UpdateContract(int id, [FromBody] ContractInputDto contract)
         {
             if (!_contractService.Update(id, contract))
                 return NotFound("You entered wrong contract ID!");

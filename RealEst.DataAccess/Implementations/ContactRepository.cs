@@ -1,11 +1,12 @@
-﻿using RealEst.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 
 namespace RealEst.DataAccess.Implementations
 {
     public class ContactRepository : IContactRepository
     {
-        private ApplicationContext _applicationContext;
+        private readonly ApplicationContext _applicationContext;
 
         public ContactRepository(ApplicationContext applicationContext)
         {
@@ -25,22 +26,22 @@ namespace RealEst.DataAccess.Implementations
 
             _applicationContext.SaveChanges();
 
-            return entityState == Microsoft.EntityFrameworkCore.EntityState.Deleted;
+            return entityState == EntityState.Deleted;
         }
 
         public List<Contact> GetAll()
         {
-            return _applicationContext.Contacts.ToList();
+            return _applicationContext.Contacts.Include(c => c.Organisation).ToList();
         }
 
         public Contact GetById(int id)
         {
-            return _applicationContext.Contacts.FirstOrDefault(c => c.Id == id)!;
+            return _applicationContext.Contacts.Include(c => c.Organisation).FirstOrDefault(c => c.Id == id)!;
         }
 
         public void Update(int id, Contact contact)
         {
-            var contactToUpdate = _applicationContext.Contacts.FirstOrDefault(c => c.Id == id);
+            var contactToUpdate = _applicationContext.Contacts.Include(c => c.Organisation).FirstOrDefault(c => c.Id == id);
 
             if (contactToUpdate != null)
             {

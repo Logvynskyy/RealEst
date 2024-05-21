@@ -1,13 +1,16 @@
-﻿using RealEst.Core.Models;
+﻿using RealEst.Core.DTOs;
+using RealEst.Core.Models;
 
 namespace RealEst.Services.Services.Interfaces
 {
     public interface IContractService
     {
-        Contract GetById(int id);
-        List<Contract> GetAll();
-        bool Add(Contract contract);
-        bool Update(int id, Contract contract);
+        ContractOutputDto GetById(int id);
+        List<ContractOutputDto> GetAll();
+        bool Add(ContractInputDto contract);
+        bool Update(int id, ContractInputDto contract);
         bool DeleteById(int id);
+        Contract DtoToEntity(ContractInputDto contractDto);
+        ContractOutputDto EntityToDto(Contract contract);
     }
 }

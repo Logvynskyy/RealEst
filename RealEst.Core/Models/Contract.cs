@@ -6,14 +6,15 @@ namespace RealEst.Core.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int UnitId { get; set; }
         public Unit Unit { get; set; }
         public string Iban { get; set; }
+        public int TennantId { get; set; }
         public Tennant Tennant { get; set; }
         public decimal Price { get; set; }
         public DateTime RentFrom { get; set; }
         public DateTime RentTo { get; set; }
-        public int OrganisationId { get; set; }
-        public Organisation Organisation { get; set; }
+        public Organisation Organisation { get; init; }
         public string DisplayString => Name + " #" + Id;
 
         public Contract()
@@ -21,19 +22,19 @@ namespace RealEst.Core.Models
             
         }
 
-        public Contract(string name, Unit unit, string iban, Tennant tennant, decimal price, DateTime rentFrom, DateTime rentTo)
+        public Contract(string name, int unitId, string iban, int tennantId, decimal price, DateTime rentFrom, DateTime rentTo)
         {
             Name = name;
-            Unit = unit;
+            UnitId = unitId;
             Iban = iban;
-            Tennant = tennant;
+            TennantId = tennantId;
             Price = price;
             RentFrom = rentFrom;
             RentTo = rentTo;
         }
 
-        public Contract(ContractInputDto contract, Unit unit, Organisation organisation)
-            : this(contract.Name, unit, contract.Iban, contract.Tennant, contract.Price, contract.RentFrom, contract.RentTo)
+        public Contract(ContractInputDto contract, Organisation organisation)
+            : this(contract.Name, contract.UnitId, contract.Iban, contract.TennantId, contract.Price, contract.RentFrom, contract.RentTo)
         {
             Organisation = organisation;
         }

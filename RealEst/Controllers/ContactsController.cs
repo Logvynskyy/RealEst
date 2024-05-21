@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RealEst.Core.Models;
+using RealEst.Core.DTOs;
 using RealEst.Services.Services.Interfaces;
 
 namespace RealEst.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class ContactsController : ControllerBase
@@ -39,7 +41,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPost("create")]
-        public IActionResult CreateNewContact([FromBody] Contact contact)
+        public IActionResult CreateNewContact([FromBody] ContactDto contact)
         {
             if (!_contactService.Add(contact))
                 return NotFound("Something went wrong!");
@@ -57,7 +59,7 @@ namespace RealEst.Controllers
         }
 
         [HttpPatch("edit/{id}")]
-        public IActionResult UpdateContact(int id, [FromBody] Contact contact)
+        public IActionResult UpdateContact(int id, [FromBody] ContactDto contact)
         {
             if (!_contactService.Update(id, contact))
                 return NotFound("You entered wrong contact ID!");

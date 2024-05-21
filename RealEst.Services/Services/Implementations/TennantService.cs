@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using RealEst.Core.DTOs;
 using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 using RealEst.Services.Services.Interfaces;
@@ -9,17 +10,22 @@ namespace RealEst.Services.Services.Implementations
     {
         private readonly ITennantRepository _tennantRepository;
         private readonly ILogger<TennantService> _logger;
+        private readonly IAuthenticationService _authenticationService;
 
-        public TennantService(ITennantRepository tennantRepository, ILogger<TennantService> logger)
+        public TennantService(ITennantRepository tennantRepository, 
+            ILogger<TennantService> logger, 
+            IAuthenticationService authenticationService)
         {
             _tennantRepository = tennantRepository;
             _logger = logger;
+            _authenticationService = authenticationService;
         }
-        public bool Add(Tennant tennant)
+
+        public bool Add(TennantDto tennant)
         {
             try
             {
-                _tennantRepository.Add(tennant);
+                _tennantRepository.Add(DtoToEntity(tennant));
 
                 _logger.LogInformation("Added new tennant");
                 return true;
@@ -45,12 +51,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public List<Tennant> GetAll()
+        public List<TennantDto> GetAll()
         {
             try
             {
                 _logger.LogInformation("Returned all tennants");
-                return _tennantRepository.GetAll();
+                return _tennantRepository.GetAll().Select(x => EntityToDto(x)).ToList();
             }
             catch (NullReferenceException e)
             {
@@ -59,12 +65,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public Tennant GetById(int id)
+        public TennantDto GetById(int id)
         {
             try
             {
                 _logger.LogInformation("Getting tennant with id {0}", id);
-                return _tennantRepository.GetById(id);
+                return EntityToDto(_tennantRepository.GetById(id));
             }
             catch (ArgumentOutOfRangeException e)
             {
@@ -73,12 +79,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public bool Update(int id, Tennant tennant)
+        public bool Update(int id, TennantDto tennantDto)
         {
             try
             {
                 // TODO: Add validation
-                tennant.Id = id;
+                var tennant = DtoToEntity(tennantDto);
 
                 _tennantRepository.Update(id, tennant);
 
@@ -95,6 +101,23 @@ namespace RealEst.Services.Services.Implementations
                 _logger.LogError(e.Message);
                 return false;
             }
+        }
+
+        public Tennant DtoToEntity(TennantDto tennantDto)
+        {
+            return new Tennant(tennantDto, _authenticationService.GetCurrentOrganisation());
+        }
+
+        public TennantDto EntityToDto(Tennant entity)
+        {
+            return new TennantDto
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                Debt = entity.Debt
+            };
         }
     }
 }
