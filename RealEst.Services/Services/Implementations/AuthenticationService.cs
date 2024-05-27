@@ -62,6 +62,19 @@ namespace RealEst.Services.Services.Implementations
                 .FirstOrDefaultAsync(u => u.UserName == userLoginDto.Username);
         }
 
+        public List<UserLoginDto> GetUsers()
+        {
+            return _userManager.Users
+                .Select(x => UserEntityToDto(x)).ToList();
+        }
+
+        public async Task<bool> DeleteByUsername(string username)
+        {
+            var result = await _userManager.DeleteAsync(_userManager.FindByNameAsync(username).Result);
+
+            return result.Succeeded;
+        }
+
         public Organisation GetCurrentOrganisation()
         {
             return _userManager
@@ -71,7 +84,7 @@ namespace RealEst.Services.Services.Implementations
                 .Result!.Organisation;
         }
 
-        public async Task<string> Login(UserLoginDto userLoginDto)
+        public async Task<LoginDto> Login(UserLoginDto userLoginDto)
         {
             var user = GetCurrentUser(userLoginDto).Result;
 
@@ -82,7 +95,10 @@ namespace RealEst.Services.Services.Implementations
 
             if(!await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
             {
-                return "pass";
+                return new LoginDto
+                {
+                    Token = "pass"
+                };
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -108,7 +124,12 @@ namespace RealEst.Services.Services.Implementations
                 signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new LoginDto
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                IsAdmin = userRoles.Any(),
+                OrganisationId = user.Organisation.Id
+            };
         }
 
         public async Task<bool> RegisterUser(UserRegistrationDto userDto)
@@ -156,6 +177,15 @@ namespace RealEst.Services.Services.Implementations
             }
 
             return;
+        }
+
+        private static UserLoginDto UserEntityToDto(ApplicationUser user)
+        {
+            return new UserLoginDto
+            {
+                Username = user.UserName,
+                Password = user.PasswordHash
+            };
         }
     }
 }

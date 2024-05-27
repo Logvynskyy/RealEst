@@ -59,12 +59,10 @@ namespace RealEst.DataAccess.Implementations
             if(contractToUpdate != null)
             {
                 contractToUpdate.Price = contract.Price;
-                contractToUpdate.Unit = contract.Unit;
                 contractToUpdate.Iban = contract.Iban;
                 contractToUpdate.Name = contract.Name;
                 contractToUpdate.RentFrom = contract.RentFrom;
                 contractToUpdate.RentTo = contract.RentTo;
-                contractToUpdate.Tennant = contract.Tennant;
 
                 //_applicationContext.Contracts.Update(contractToUpdate);
                 _applicationContext.SaveChanges();

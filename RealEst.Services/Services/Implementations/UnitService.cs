@@ -11,6 +11,7 @@ namespace RealEst.Services.Services.Implementations
         private readonly IUnitRepository _unitRepository;
         private readonly ILogger<UnitService> _logger;
         private readonly IAuthenticationService _authenticationService;
+        private readonly Organisation _currentOrganisation;
 
         public UnitService(IUnitRepository unitRepository, 
             ILogger<UnitService> logger, 
@@ -19,6 +20,7 @@ namespace RealEst.Services.Services.Implementations
             _unitRepository = unitRepository;
             _logger = logger;
             _authenticationService = authenticationService;
+            _currentOrganisation = _authenticationService.GetCurrentOrganisation();
         }
 
         public bool Add(UnitDto unitDto)
@@ -46,6 +48,8 @@ namespace RealEst.Services.Services.Implementations
             try
             {
                 _logger.LogInformation("Deleting unit with id {0}", id);
+
+                DeleteDefectsOnUnitById(id);
                 return _unitRepository.DeleteById(id);
             }
             catch (ArgumentOutOfRangeException e)
@@ -55,13 +59,15 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public List<UnitDto> GetAll()
+        public List<UnitOutputDto> GetAll()
         {
             try
             {
                 _logger.LogInformation("Returned all units");
 
-                return _unitRepository.GetAll().Select(x => EntityToDto(x)).ToList();
+                return _unitRepository.GetAll()
+                    .Where(u => u.Organisation == _currentOrganisation)
+                    .Select(x => EntityToDto(x)).ToList();
             }
             catch (NullReferenceException e)
             {
@@ -70,7 +76,7 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public UnitDto GetById(int id)
+        public UnitOutputDto GetById(int id)
         {
             try
             {
@@ -111,20 +117,67 @@ namespace RealEst.Services.Services.Implementations
 
         public Unit DtoToEntity(UnitDto unitDto)
         {
-            return new Unit(unitDto, _authenticationService.GetCurrentOrganisation());
+            return new Unit(DtoToUnitDefectsDto(unitDto), _authenticationService.GetCurrentOrganisation());
         }
 
-        public UnitDto EntityToDto(Unit unit)
+        public UnitOutputDto EntityToDto(Unit unit)
         {
-            return new UnitDto
+            return new UnitOutputDto
             {
                 Id = unit.Id,
                 Name = unit.Name,
                 Address = unit.Address,
                 UnitType = unit.UnitType,
                 Footage = unit.Footage,
-                Defects = unit.Defects
+                Defects = DefectsEntityToDto(unit.Defects!)
             };
+        }
+
+        private void DeleteDefectsOnUnitById(int unitId)
+        {
+            var unit = _unitRepository.GetById(unitId);
+            if (unit != null)
+            {
+                unit.Defects = null;
+                _unitRepository.Update(unitId, unit);
+            }
+        }
+
+        private UnitDefectsDto DtoToUnitDefectsDto(UnitDto unitDto)
+        {
+            return unitDto.Defects == null
+                ? new UnitDefectsDto
+                {
+                    Id = unitDto.Id,
+                    Name = unitDto.Name,
+                    Address = unitDto.Address,
+                    UnitType = unitDto.UnitType,
+                    Footage = unitDto.Footage
+                }
+                : new UnitDefectsDto
+                {
+                    Id = unitDto.Id,
+                    Name = unitDto.Name,
+                    Address = unitDto.Address,
+                    UnitType = unitDto.UnitType,
+                    Footage = unitDto.Footage,
+                    Defects = unitDto.Defects
+                        .Select(defectDto => new Defect(defectDto, _authenticationService.GetCurrentOrganisation()))
+                        .ToList()
+                };
+
+        }
+
+        private List<DefectOutputDto> DefectsEntityToDto(IList<Defect> defects)
+        {
+            return defects == null ? new List<DefectOutputDto>() : 
+                defects.Select(defect => new DefectOutputDto
+                {
+                    Id = defect.Id,
+                    Name = defect.Name,
+                    Description = defect.Description,
+                    DefectType = defect.DefectType
+                }).ToList();
         }
     }
 }

@@ -34,7 +34,10 @@ namespace RealEst.Controllers
             if (!_organisationService.Add(organisation))
                 return NotFound("Something went wrong!");
 
-            return Created("api/Organisations", organisation);
+            return Created("api/Authentication/RegisterOrganisationOwner", new
+            {
+                organisationId = organisation.Id
+            });
         }
     }
 }

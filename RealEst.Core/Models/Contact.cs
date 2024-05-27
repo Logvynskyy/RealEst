@@ -12,7 +12,6 @@ namespace RealEst.Core.Models
         public string PhoneNumber { get; set; }
         public ContactTypes ContactType { get; set; }
         public int Priority { get; set; }
-        public string DisplayString => Name + ' ' + LastName;
         public Organisation Organisation { get; init; }
 
         public Contact()

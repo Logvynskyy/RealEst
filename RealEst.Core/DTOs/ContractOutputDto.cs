@@ -10,5 +10,6 @@
         public decimal Price { get; set; }
         public DateTime RentFrom { get; set; }
         public DateTime RentTo { get; set; }
+        public string DisplayString => Name + " #" + Id;
     }
 }

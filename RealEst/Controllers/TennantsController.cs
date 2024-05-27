@@ -66,5 +66,23 @@ namespace RealEst.Controllers
 
             return Ok(_tennantService.GetById(id));
         }
+
+        [HttpPatch("clear-debt/{id}")]
+        public IActionResult SetDebtToZero(int id)
+        {
+            if (!_tennantService.SetDebtToZeroById(id))
+                return NotFound("You entered wrong tennant ID!");
+
+            return Ok(_tennantService.GetById(id));
+        }
+
+        [HttpPatch("add-debt/{id}")]
+        public IActionResult AddDebt(int id, [FromBody] int debt)
+        {
+            if (!_tennantService.AddDebtById(id, debt))
+                return NotFound("You entered wrong tennant ID!");
+
+            return Ok(_tennantService.GetById(id));
+        }
     }
 }

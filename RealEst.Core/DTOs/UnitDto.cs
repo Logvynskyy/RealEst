@@ -10,6 +10,6 @@ namespace RealEst.Core.DTOs
         public string Address { get; set; }
         public UnitTypes UnitType { get; set; }
         public double Footage { get; set; }
-        public IList<Defect>? Defects { get; set; }
+        public IList<DefectInputDto>? Defects { get; set; }
     }
 }

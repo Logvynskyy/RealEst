@@ -11,7 +11,6 @@ namespace RealEst.Core.Models
         public decimal Debt { get; set; }
         public bool IsDebtor => Debt > 0;
         public Organisation Organisation { get; init; }
-        public string DisplayString => Name + ' ' + LastName;
 
         public Tennant()
         {

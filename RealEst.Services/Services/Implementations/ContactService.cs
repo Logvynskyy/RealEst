@@ -11,6 +11,7 @@ namespace RealEst.Services.Services.Implementations
         private readonly IContactRepository _contactRepository;
         private readonly ILogger _logger;
         private readonly IAuthenticationService _authenticationService;
+        private readonly Organisation _currentOrganisation;
 
         public ContactService(IContactRepository contactRepository, 
             ILogger<ContactService> logger,
@@ -19,6 +20,7 @@ namespace RealEst.Services.Services.Implementations
             _contactRepository = contactRepository;
             _logger = logger;
             _authenticationService = authenticationService;
+            _currentOrganisation = _authenticationService.GetCurrentOrganisation();
         }
 
         public bool Add(ContactDto contact)
@@ -56,7 +58,9 @@ namespace RealEst.Services.Services.Implementations
             try
             {
                 _logger.LogInformation("Returned all contacts");
-                return _contactRepository.GetAll().Select(x => EntityToDto(x)).ToList();
+                return _contactRepository.GetAll()
+                    .Where(c => c.Organisation == _currentOrganisation)
+                    .Select(x => EntityToDto(x)).ToList();
             }
             catch (NullReferenceException e)
             {
@@ -105,7 +109,7 @@ namespace RealEst.Services.Services.Implementations
 
         public Contact DtoToEntity(ContactDto contactDto)
         {
-            return new Contact(contactDto, _authenticationService.GetCurrentOrganisation());
+            return new Contact(contactDto, _currentOrganisation);
         }
 
         public ContactDto EntityToDto(Contact entity)

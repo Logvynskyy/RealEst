@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RealEst.Core.Constants;
 using RealEst.Core.DTOs;
 using RealEst.Services.Services.Interfaces;
 
@@ -12,7 +14,19 @@ namespace RealEst.Controllers
 
         public AuthenticationController(IAuthenticationService authenticationService)
         {  
-            _authenticationService = authenticationService;;
+            _authenticationService = authenticationService;
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = UserRoles.Admin)]
+        [HttpGet("Users")]
+        public IActionResult GetUsers()
+        {
+            var users = _authenticationService.GetUsers();
+
+            if (users == null || users.Count == 0)
+                return NotFound("You don't have any users! Please, create one");
+
+            return Ok(users);
         }
 
         [HttpPost("Register")]
@@ -30,7 +44,9 @@ namespace RealEst.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Creation went wrong!");
             }
 
-            return Ok("User registered successfully!");
+            return Ok(new {
+                message = "User registered successfully!"
+            });
         }
 
         [HttpPost("RegisterOrganisationOwner")]
@@ -48,25 +64,39 @@ namespace RealEst.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Creation went wrong!");
             }
 
-            return Ok("Admin registered successfully!");
+            return Ok(new {
+                message = "Admin registered successfully!"
+            });
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
         {
-            var token = await _authenticationService.Login(userLoginDto);
+            var loginInfo = await _authenticationService.Login(userLoginDto);
 
-            if(token == null)
+            if(loginInfo == null)
             {
                 return Unauthorized("User doesn't exists!");
             }
 
-            if(token == "pass")
+            if(loginInfo.Token == "pass")
             {
                 return Unauthorized("You've entered the wrong password!");
             }
 
-            return Ok(token);
+            return Ok(loginInfo);
+        }
+
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = UserRoles.Admin)]
+        [HttpDelete("Users/delete/{username}")]
+        public async Task<IActionResult> DeleteUser(string username)
+        {
+            var result = await _authenticationService.DeleteByUsername(username);
+
+            if (!result)
+                return NotFound("You entered wrong contact ID!");
+
+            return Ok(_authenticationService.GetUsers());
         }
     }
 }

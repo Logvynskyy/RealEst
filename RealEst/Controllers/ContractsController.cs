@@ -58,12 +58,23 @@ namespace RealEst.Controllers
         }
 
         [HttpPatch("edit/{id}")]
-        public IActionResult UpdateContract(int id, [FromBody] ContractInputDto contract)
+        public IActionResult UpdateContract(int id, [FromBody] ContractEditDto contract)
         {
             if (!_contractService.Update(id, contract))
                 return NotFound("You entered wrong contract ID!");
 
             return Ok(_contractService.GetById(id));
+        }
+
+        [HttpGet("income")]
+        public IActionResult GetIncome()
+        {
+            var income = _contractService.GetIncome();
+
+            if (income == null || income.Count == 0)
+                return Ok(null);
+
+            return Ok(income);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using RealEst.Core.Constants;
+using RealEst.Core.DTOs;
 
 namespace RealEst.Core.Models
 {
@@ -8,7 +9,6 @@ namespace RealEst.Core.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public DefectTypes DefectType { get; set; }
-        public string DisplayString => Name;
         public Organisation Organisation { get; init; }
 
         public Defect()
@@ -24,5 +24,10 @@ namespace RealEst.Core.Models
             DefectType = defectType;
         }
 
+        public Defect(DefectInputDto defectDTO, Organisation organisation)
+            : this(0, defectDTO.Name, defectDTO.Description, defectDTO.DefectType)
+        {
+            Organisation = organisation;
+        }
     }
 }

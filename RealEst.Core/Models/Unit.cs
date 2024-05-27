@@ -12,7 +12,6 @@ namespace RealEst.Core.Models
         public double Footage { get; set; }
         public IList<Defect>? Defects { get; set; }
         public Organisation Organisation { get; init; }
-        public string DisplayString => Name + ' ' + Address;
 
         public Unit()
         {
@@ -29,7 +28,7 @@ namespace RealEst.Core.Models
             Defects = defects;
         }
 
-        public Unit(UnitDto unitDto, Organisation organisation)
+        public Unit(UnitDefectsDto unitDto, Organisation organisation)
             : this(unitDto.Name, unitDto.Address, unitDto.UnitType, unitDto.Footage, unitDto.Defects)
         {
             Organisation = organisation;

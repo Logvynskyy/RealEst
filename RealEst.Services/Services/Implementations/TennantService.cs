@@ -11,6 +11,7 @@ namespace RealEst.Services.Services.Implementations
         private readonly ITennantRepository _tennantRepository;
         private readonly ILogger<TennantService> _logger;
         private readonly IAuthenticationService _authenticationService;
+        private readonly Organisation _currentOrganisation;
 
         public TennantService(ITennantRepository tennantRepository, 
             ILogger<TennantService> logger, 
@@ -19,6 +20,7 @@ namespace RealEst.Services.Services.Implementations
             _tennantRepository = tennantRepository;
             _logger = logger;
             _authenticationService = authenticationService;
+            _currentOrganisation = _authenticationService.GetCurrentOrganisation();
         }
 
         public bool Add(TennantDto tennant)
@@ -56,7 +58,9 @@ namespace RealEst.Services.Services.Implementations
             try
             {
                 _logger.LogInformation("Returned all tennants");
-                return _tennantRepository.GetAll().Select(x => EntityToDto(x)).ToList();
+                return _tennantRepository.GetAll()
+                    .Where(t => t.Organisation == _currentOrganisation)
+                    .Select(x => EntityToDto(x)).ToList();
             }
             catch (NullReferenceException e)
             {
@@ -97,6 +101,44 @@ namespace RealEst.Services.Services.Implementations
                 return false;
             }
             catch (ArgumentOutOfRangeException e)
+            {
+                _logger.LogError(e.Message);
+                return false;
+            }
+        }
+
+        public bool SetDebtToZeroById(int id)
+        {
+            try
+            {
+                var tennant = DtoToEntity(GetById(id));
+                tennant.Debt = 0;
+
+                _tennantRepository.Update(id, tennant);
+
+                _logger.LogInformation("Setting debt to 0 for the tennant with id {1}", id);
+                return true;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+                return false;
+            }
+        }
+
+        public bool AddDebtById(int id, int debt)
+        {
+            try
+            {
+                var tennant = DtoToEntity(GetById(id));
+                tennant.Debt += debt;
+
+                _tennantRepository.Update(id, tennant);
+
+                _logger.LogInformation("Setting debt to {0} for the tennant with id {1}", debt, id);
+                return true;
+            }
+            catch (Exception e)
             {
                 _logger.LogError(e.Message);
                 return false;

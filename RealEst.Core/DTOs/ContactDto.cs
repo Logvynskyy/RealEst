@@ -11,5 +11,6 @@ namespace RealEst.Core.DTOs
         public string PhoneNumber { get; set; }
         public ContactTypes ContactType { get; set; }
         public int Priority { get; set; }
+        public string DisplayString => Name + ' ' + LastName;
     }
 }

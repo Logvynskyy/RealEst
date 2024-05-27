@@ -13,6 +13,7 @@ namespace RealEst.Services.Services.Implementations
         private readonly IAuthenticationService _authenticationService;
         private readonly IUnitService _unitService;
         private readonly ITennantService _tennantService;
+        private readonly Organisation _currentOrganisation;
 
         public ContractService(IContractRepository contractRepository, 
             ILogger<ContractService> logger,
@@ -25,6 +26,7 @@ namespace RealEst.Services.Services.Implementations
             _authenticationService = authenticationService;
             _unitService = unitService;
             _tennantService = tennantService;
+            _currentOrganisation = _authenticationService.GetCurrentOrganisation();
         }
 
         public bool Add(ContractInputDto contractDto)
@@ -64,7 +66,9 @@ namespace RealEst.Services.Services.Implementations
             {
                 _logger.LogInformation("Returned all contracts");
 
-                return _contractRepository.GetAll().Select(x => EntityToDto(x)).ToList();
+                return _contractRepository.GetAll()
+                    .Where(c => c.Organisation == _currentOrganisation)
+                    .Select(x => EntityToDto(x)).ToList();
             }
             catch (NullReferenceException e)
             {
@@ -88,12 +92,12 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
-        public bool Update(int id, ContractInputDto contractDto)
+        public bool Update(int id, ContractEditDto contractDto)
         {
             try
             {
                 // TODO: Add validation
-                var contract = DtoToEntity(contractDto);
+                var contract = EditDtoToEntity(id, contractDto);
 
                 _contractRepository.Update(id, contract);
 
@@ -112,6 +116,11 @@ namespace RealEst.Services.Services.Implementations
             }
         }
 
+        public List<IncomeDto> GetIncome()
+        {
+            throw new NotImplementedException();
+        }
+
         public Contract DtoToEntity(ContractInputDto contractDto)
         {
             return new Contract(contractDto, _authenticationService.GetCurrentOrganisation());
@@ -123,13 +132,28 @@ namespace RealEst.Services.Services.Implementations
             {
                 Id = contract.Id,
                 Name = contract.Name,
-                Unit = contract.Unit.DisplayString,
+                Unit = _unitService.EntityToDto(contract.Unit).DisplayString,
                 Iban = contract.Iban,
-                Tennant = contract.Tennant.DisplayString,
+                Tennant = _tennantService.EntityToDto(contract.Tennant).DisplayString,
                 Price = contract.Price,
                 RentFrom = contract.RentFrom,
                 RentTo = contract.RentTo
             };
+        }
+
+        private Contract EditDtoToEntity(int id, ContractEditDto contractDto)
+        {
+            return DtoToEntity(new ContractInputDto
+            {
+                Id = id,
+                Name = contractDto.Name,
+                UnitId = _contractRepository.GetById(id).UnitId,
+                Iban = contractDto.Iban,
+                TennantId = _contractRepository.GetById(id).TennantId,
+                Price = contractDto.Price,
+                RentFrom = GetById(id).RentFrom,
+                RentTo = contractDto.RentTo
+            });
         }
     }
 }

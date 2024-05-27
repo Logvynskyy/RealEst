@@ -9,7 +9,9 @@ namespace RealEst.Services.Services.Interfaces
         Task<bool> CheckIfUserExists(UserRegistrationDto userDto);
         Task<bool> RegisterUser(UserRegistrationDto userDto);
         Task<bool> RegisterAdmin(UserRegistrationDto userDto);
-        Task<string> Login(UserLoginDto userLoginDto);
+        List<UserLoginDto> GetUsers();
+        Task<bool> DeleteByUsername(string username);
+        Task<LoginDto> Login(UserLoginDto userLoginDto);
         Task<ApplicationUser> GetCurrentUser(UserRegistrationDto userDto);
         Organisation GetCurrentOrganisation();
     }

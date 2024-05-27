@@ -15,7 +15,6 @@ namespace RealEst.Core.Models
         public DateTime RentFrom { get; set; }
         public DateTime RentTo { get; set; }
         public Organisation Organisation { get; init; }
-        public string DisplayString => Name + " #" + Id;
 
         public Contract()
         {

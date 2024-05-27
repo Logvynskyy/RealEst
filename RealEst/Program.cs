@@ -116,6 +116,12 @@ namespace RealEst
             //app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
 
 
             app.MapControllers();

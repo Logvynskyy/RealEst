@@ -5,12 +5,12 @@ namespace RealEst.Services.Services.Interfaces
 {
     public interface IUnitService
     {
-        UnitDto GetById(int id);
-        List<UnitDto> GetAll();
+        UnitOutputDto GetById(int id);
+        List<UnitOutputDto> GetAll();
         bool Add(UnitDto unitDto);
         bool Update(int id, UnitDto unitDto);
         bool DeleteById(int id);
         Unit DtoToEntity(UnitDto unitDto);
-        UnitDto EntityToDto(Unit unit);
+        UnitOutputDto EntityToDto(Unit unit);
     }
 }
