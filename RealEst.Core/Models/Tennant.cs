@@ -1,4 +1,6 @@
-﻿namespace RealEst.Core.Models
+﻿using RealEst.Core.DTOs;
+
+namespace RealEst.Core.Models
 {
     public class Tennant : IPerson
     {
@@ -8,14 +10,25 @@
         public string Email { get; set; }
         public decimal Debt { get; set; }
         public bool IsDebtor => Debt > 0;
+        public Organisation Organisation { get; init; }
 
-        public Tennant(int id, string name, string lastName, string email, decimal debt = 0)
+        public Tennant()
         {
-            Id = id;
+            
+        }
+
+        public Tennant(string name, string lastName, string email, decimal debt = 0)
+        {
             Name = name;
             LastName = lastName;
             Email = email;
             Debt = debt;
+        }
+
+        public Tennant(TennantDto tennantDto, Organisation organisation)
+            : this(tennantDto.Name, tennantDto.LastName, tennantDto.Email, tennantDto.Debt)
+        {
+            Organisation = organisation;
         }
     }
 }

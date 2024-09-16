@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RealEst.Core.Models;
-using RealEst.Services.Service;
+using RealEst.Core.DTOs;
+using RealEst.Services.Services.Interfaces;
 
 namespace RealEst.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class ContractsController : ControllerBase
@@ -19,28 +20,32 @@ namespace RealEst.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            if (_contractService.GetAll() == null)
+            var contracts = _contractService.GetAll();
+
+            if (contracts == null || contracts.Count == 0)
                 return NotFound("You don't have any contracts! Please, create one");
 
-            return Ok(_contractService.GetAll());
+            return Ok(contracts);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetContractById(int id)
         {
-            if (_contractService.GetById(id) == null)
+            var contract = _contractService.GetById(id);
+
+            if (contract == null)
                 return NotFound("You entered wrong contract ID!");
 
-            return Ok(_contractService.GetById(id));
+            return Ok(contract);
         }
 
         [HttpPost("create")]
-        public IActionResult CreateNewContract([FromBody] Contract contract)
+        public IActionResult CreateNewContract([FromBody] ContractInputDto contract)
         {
             if (!_contractService.Add(contract))
                 return NotFound("Something went wrong!");
 
-            return Created("api/Unit", contract);
+            return Created("api/Contracts", null);
         }
 
         [HttpDelete("delete/{id}")]
@@ -53,12 +58,23 @@ namespace RealEst.Controllers
         }
 
         [HttpPatch("edit/{id}")]
-        public IActionResult UpdateContract(int id, [FromBody] Contract contract)
+        public IActionResult UpdateContract(int id, [FromBody] ContractEditDto contract)
         {
             if (!_contractService.Update(id, contract))
                 return NotFound("You entered wrong contract ID!");
 
             return Ok(_contractService.GetById(id));
+        }
+
+        [HttpGet("income")]
+        public IActionResult GetIncome()
+        {
+            var income = _contractService.GetIncome();
+
+            if (income == null || income.Count == 0)
+                return Ok(null);
+
+            return Ok(income);
         }
     }
 }
