@@ -1,6 +1,4 @@
-﻿using RealEst.Core.Models;
-
-namespace RealEst.Core.DTOs
+﻿namespace RealEst.Core.DTOs
 {
     public class ContractInputDto
     {

@@ -3,6 +3,7 @@ using RealEst.Core.DTOs;
 using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 using RealEst.Services.Services.Interfaces;
+using System.Globalization;
 
 namespace RealEst.Services.Services.Implementations
 {
@@ -118,7 +119,23 @@ namespace RealEst.Services.Services.Implementations
 
         public List<IncomeDto> GetIncome()
         {
-            throw new NotImplementedException();
+            var income = new List<IncomeDto>();
+            var contracts = GetAll();
+
+            var months = GetAllMonthsBetweenDates(contracts.Min(x => x.RentFrom), contracts.Max(x => x.RentTo));
+
+            foreach(var month in months)
+            {
+                var amount = GetContractsThatAreValidInMonth(month)?.Sum(x => x.Price);
+
+                income.Add(new IncomeDto
+                {
+                    Month = CultureInfo.CreateSpecificCulture("uk-UA").DateTimeFormat.GetMonthName(month.Month) + " " + month.Year,
+                    Amount = amount ?? 0,
+                });
+            }
+            
+            return income.Where(x => x.Amount > 0).ToList();
         }
 
         public Contract DtoToEntity(ContractInputDto contractDto)
@@ -154,6 +171,42 @@ namespace RealEst.Services.Services.Implementations
                 RentFrom = GetById(id).RentFrom,
                 RentTo = contractDto.RentTo
             });
+        }
+
+        private List<DateTime> GetAllMonthsBetweenDates(DateTime startDate, DateTime endDate)
+        {
+            var months = new List<DateTime>();
+            var current = new DateTime(startDate.Year, startDate.Month, 1);
+
+            while (current <= endDate)
+            {
+                months.Add(current);
+                current = current.AddMonths(1);
+            }
+
+            return months;
+        }
+
+        private List<ContractOutputDto> GetContractsThatAreValidInMonth(DateTime date)
+        {
+            int year = date.Year;
+            int month = date.Month;
+            var contracts = GetAll();
+            var validContracts = new List<ContractOutputDto>();
+
+            contracts.ForEach(contract =>
+            {
+                bool isRentFromValid = contract.RentFrom.Year == year && contract.RentFrom.Month == month;
+                bool isRentToValid = contract.RentTo.Year == year && contract.RentTo.Month == month;
+
+                bool isSpanningMonth = contract.RentFrom <= new DateTime(year, month, DateTime.DaysInMonth(year, month)) &&
+                                       contract.RentTo >= new DateTime(year, month, 1);
+
+                if (isRentFromValid || isRentToValid || isSpanningMonth)
+                    validContracts.Add(contract);
+            });
+
+            return validContracts;
         }
     }
 }

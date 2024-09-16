@@ -8,20 +8,19 @@ namespace RealEst.DataAccess.Implementations
     {
         private readonly List<Unit> _units = new()
         {
-            //new Unit("unit1", "address1", UnitType.Room, 15),
-            //new Unit("unit2", "address2", UnitType.Apartment, 60),
-            //new Unit("unit3", "address3", UnitType.House, 100, new List<Defect>()
-            //    {
-            //        new Defect(0, "def1", "desc1", DefectType.InnerCosmetic)
-            //    }
-            //)
+            new Unit("unit1", "address1", UnitTypes.Room, 15),
+            new Unit("unit2", "address2", UnitTypes.Apartment, 60),
+            new Unit("unit3", "address3", UnitTypes.House, 100, new List<Defect>()
+                {
+                    new Defect(0, "def1", "desc1", DefectTypes.InnerCosmetic)
+                }
+            )
         };
 
         private int _unitId = 3;
 
         public void Add(Unit unit)
         {
-            unit.Id = _unitId++;
             _units.Add(unit);
         }
 

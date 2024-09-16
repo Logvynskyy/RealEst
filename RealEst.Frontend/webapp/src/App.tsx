@@ -23,6 +23,7 @@ import EditContract from "./pages/contracts/EditContract";
 import Debtors from "./pages/debtors/Debtors";
 import Users from "./pages/users/Users";
 import CreateUser from "./pages/users/CreateUser";
+import Incomes from "./pages/income/Incomes";
 
 function Root() {
   return (
@@ -46,6 +47,8 @@ function Root() {
           <Route path={Endpoints.createTennant} element={<CreateTennant />} />
           <Route path={Endpoints.editTennant + "/:tennantId"} element={<EditTennant />}
           />
+
+          <Route path={Endpoints.income} element={<Incomes />} />
 
           <Route path={Endpoints.debtors} element={<Debtors />} />
 

@@ -3,23 +3,28 @@ using RealEst.Core.DTOs;
 using RealEst.Core.Models;
 using RealEst.DataAccess.Interfaces;
 using RealEst.Services.Services.Interfaces;
+using RealEst.Services.Validators.Interfaces;
 
 namespace RealEst.Services.Services.Implementations
 {
     public class UnitService : IUnitService
     {
         private readonly IUnitRepository _unitRepository;
+        //private readonly IUnitValidator _unitValidator;
         private readonly ILogger<UnitService> _logger;
         private readonly IAuthenticationService _authenticationService;
         private readonly Organisation _currentOrganisation;
 
         public UnitService(IUnitRepository unitRepository, 
             ILogger<UnitService> logger, 
-            IAuthenticationService authenticationService)
+            IAuthenticationService authenticationService
+            //IUnitValidator unitValidator
+            )
         {
             _unitRepository = unitRepository;
             _logger = logger;
             _authenticationService = authenticationService;
+            //_unitValidator = unitValidator;
             _currentOrganisation = _authenticationService.GetCurrentOrganisation();
         }
 
@@ -27,8 +32,9 @@ namespace RealEst.Services.Services.Implementations
         {
             try
             {
-                //if (!_unitValidator.Validate(unit).FirstOrDefault())
+                //if (!_unitValidator.Validate(unitDto))
                 //    throw new InvalidOperationException("You passed invalid unit!");
+
                 var unit = DtoToEntity(unitDto);
 
                 _unitRepository.Add(unit);
